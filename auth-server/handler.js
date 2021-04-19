@@ -65,6 +65,7 @@ module.exports.getAccessToken = async (event) => {
   const oAuth2Client = new google.auth.OAuth2(
     client_id,
     client_secret,
+    calendar_id,
     redirect_uris[0]
   );
   // Get authorization code from the URL query
@@ -91,6 +92,64 @@ module.exports.getAccessToken = async (event) => {
           "Access-Control-Allow-Origin": "*",
         },
         body: JSON.stringify(token),
+      };
+    })
+    .catch((err) => {
+      // Handle error
+      console.error(err);
+      return {
+        statusCode: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify(err),
+      };
+    });
+};
+
+module.exports.getCalendarEvents = async (input) => {
+  // The values used to instantiate the OAuthClient are at the top of the file
+  const oAuth2Client = new google.auth.OAuth2(
+    client_id,
+    client_secret,
+    calendar_id,
+    redirect_uris[0]
+  );
+  // Get authorization code from the URL query
+  const access_token = decodeURIComponent(
+    `${input.pathParameters.access_token}`
+  );
+
+  oAuth2Client.setCredentials({ access_token }); // Here is where we set the access_token
+
+  return new Promise((resolve, reject) => {
+    // Then we can call the calendar events API
+    calendar.events.list(
+      {
+        calendarId: calendar_id,
+        auth: oAuth2Client,
+        timeMin: new Date().toISOString(),
+        maxResults: 32,
+        singleEvents: true,
+        orderBy: "startTime",
+      },
+      (error, response) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(response);
+        }
+      }
+    );
+  })
+    .then((results) => {
+      // Respond with calendar events
+      return {
+        statusCode: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({ events: results.data.items }),
       };
     })
     .catch((err) => {
