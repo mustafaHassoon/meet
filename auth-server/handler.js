@@ -65,7 +65,6 @@ module.exports.getAccessToken = async (event) => {
   const oAuth2Client = new google.auth.OAuth2(
     client_id,
     client_secret,
-    calendar_id,
     redirect_uris[0]
   );
   // Get authorization code from the URL query
