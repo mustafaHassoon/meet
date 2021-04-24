@@ -1,8 +1,14 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, mount, configure } from 'enzyme';
+
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+
+import App from '../App';
 import CitySearch from '../CitySearch';
 import { mockData } from "../mock-data";
 import { extractLocations } from "../api";
+
+configure({ adapter: new Adapter() });
 
 const locations = extractLocations(mockData);
 
@@ -11,7 +17,7 @@ describe('<CitySearch /> component', () => {
   let locations, CitySearchWrapper;
   beforeAll(() => {
     locations = extractLocations(mockData);
-    CitySearchWrapper = shallow(<CitySearch locations={locations} />);
+    CitySearchWrapper = shallow(<CitySearch updateEvents={() => { }} locations={locations} />);
   });
 
 
@@ -66,12 +72,52 @@ describe('<CitySearch /> component', () => {
   });
 
   test("selecting a suggestion should change query state", () => {
+    const CitySearchWrapper = shallow(
+      <CitySearch updateEvents={() => { }} locations={locations} />
+    );
+
     CitySearchWrapper.setState({
       query: '',
-      suggestions: locations
+      suggestions: locations,
     });
     const suggestions = CitySearchWrapper.state('suggestions');
     CitySearchWrapper.find('.suggestions li').at(0).simulate('click');
     expect(CitySearchWrapper.state("query")).toBe(suggestions[0]);
+    expect(CitySearchWrapper.find('.suggestions').prop('style')).toEqual({ display: 'none' });
+
+  });
+
+
+
+
+
+  test("suggestions list will appear upon having a focus on city input field", () => {
+    CitySearchWrapper.setState({
+      query: '',
+      suggestions: locations,
+    });
+    CitySearchWrapper.find('.city').simulate('focus');
+    expect(CitySearchWrapper.find('.suggestions').prop('style')).toEqual({});
+  });
+});
+
+
+
+describe("<CitySearch /> integration", () => {
+  test("get a list of cities when user searches for Berlin", () => {
+    const CitySearchWrapper = shallow(<CitySearch locations={locations} />);
+    CitySearchWrapper.find(".city").simulate("change", {
+      target: { value: "Berlin" },
+    });
+    expect(CitySearchWrapper.state("suggestions")).toEqual(["Berlin, Germany"]);
+  });
+
+  test("get list of events after user selects a city", async () => {
+    const AppWrapper = mount(<App />);
+    AppWrapper.instance().updateEvents = jest.fn();
+    AppWrapper.instance().forceUpdate();
+    const CitySearchWrapper = AppWrapper.find(CitySearch);
+    CitySearchWrapper.instance().handleItemClicked("value");
+    expect(AppWrapper.instance().updateEvents).toHaveBeenCalledTimes(1);
   });
 });

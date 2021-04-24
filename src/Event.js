@@ -11,6 +11,12 @@ class Event extends Component {
     }));
   };
 
+  onDetailsButtonClicked = () => {
+    this.setState((prevState) => ({
+      showDetails: !prevState.showDetails,
+    }));
+  };
+
   render() {
     const event = this.props.event;
     return (

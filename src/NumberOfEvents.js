@@ -6,15 +6,18 @@ class NumberOfEvents extends Component {
     numberOfEvents: 32
   };
 
-  handleInputChanged = (event) => {
-    const value = event.target.value;
+  handleInputChanged = (eventCount) => {
+    const value = eventCount.target.value;
     this.setState({ numberOfEvents: value });
+    this.props.updateEvents(null, value);
+    // console.log(this.props.updateEvents)
     //this.props.updateEvents(null, null, value);
   }
 
   render() {
     return (
       <div className="numberOfEvents">
+        <label>NUmber of Events:</label>
         <input
           type="text"
           id="numberOfEvents"
