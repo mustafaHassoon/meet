@@ -10,6 +10,8 @@
     "static/js/3.dad38710.chunk.js": "/meet/static/js/3.dad38710.chunk.js",
     "static/js/3.dad38710.chunk.js.map": "/meet/static/js/3.dad38710.chunk.js.map",
     "index.html": "/meet/index.html",
+    "service-worker.js": "/meet/service-worker.js",
+    "service-worker.js.map": "/meet/service-worker.js.map",
     "static/css/main.2bd209dd.chunk.css.map": "/meet/static/css/main.2bd209dd.chunk.css.map",
     "static/js/2.3069982b.chunk.js.LICENSE.txt": "/meet/static/js/2.3069982b.chunk.js.LICENSE.txt"
   },
