@@ -4,7 +4,8 @@ import './App.css';
 import EventList from './EventList';
 import CitySearch from './CitySearch';
 import NumberOfEvents from "./NumberOfEvents";
-import { extractLocations, getEvents } from './api';
+import { getEvents } from './api';
+import { OfflineAlert } from "./Alert";
 
 
 
@@ -20,6 +21,13 @@ class App extends Component {
 
   async componentDidMount() {
     this.mounted = true;
+
+    if (!navigator.onLine) {
+      this.setState({
+        infoText:
+          "As you are offline, you are only viewing the cached events from your last session",
+      });
+    }
     getEvents().then((response) => {
       if (this.mounted) {
         this.setState({
@@ -72,6 +80,9 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+
+        <OfflineAlert text={this.state.infoText} />
+
         <CitySearch
           locations={this.state.locations}
 

@@ -31,13 +31,25 @@ const checkToken = async (accessToken) => {
 export const getEvents = async () => {
   NProgress.start();
 
+
+
+
+
   if (window.location.href.startsWith("http://localhost")) {
     NProgress.done();
 
     return { events: mockData, locations: extractLocations(mockData) };
   }
-  const token = await getAccessToken();
 
+  if (!navigator.onLine) {
+    const events = localStorage.getItem("lastEvents");
+    NProgress.done();
+    return { events: JSON.parse(events).events, locations: extractLocations(JSON.parse(events).events) };
+  }
+
+
+
+  const token = await getAccessToken();
   if (token) {
     removeQuery();
     const url = `https://imof418qhe.execute-api.eu-central-1.amazonaws.com/dev/api/get-events/${token}`;
